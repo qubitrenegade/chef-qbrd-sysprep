@@ -29,6 +29,7 @@ before_script:
 .habitat-setup: &habitat-setup
   extends: .before_script
   before_script:
+    - set -x
     - cat /etc/*release* || true
     - whoami
     - uname -a || true
