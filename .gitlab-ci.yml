@@ -4,17 +4,19 @@ variables:
   DEBUG_KITCHEN_CLEANUP_ON_FAILURE: /bin/true
   HAB_INSTALL_URL: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh"
 stages:
+  - build
   - acceptance
   - test
-  - build
   - publish
 
 .before_script:
   before_script:
+    - whoami
     - cat /etc/*release* || true
     - uname -a || true
 
 before_script:
+  - whoami
   - cat /etc/*release* || true
   - uname -a || true
 
@@ -28,8 +30,10 @@ before_script:
   extends: .before_script
   before_script:
     - cat /etc/*release* || true
+    - whoami
     - uname -a || true
-    - 'ruby -r ''net/http'' -r ''uri'' -e "puts NET::HTTP.get_response(URI.parse(${HAB_INSTALL_URL}).body" | bash'
+    # - 'ruby -r ''net/http'' -r ''uri'' -e "puts NET::HTTP.get_response(URI.parse(${HAB_INSTALL_URL}).body" | bash'
+    - chef exec curl "${HAB_INSTALL_URL}" | bash
     - mkdir -vp /hab/cache/keys
     - mv "${HAB_PRIV_KEY_PATH}" "/hab/cache/keys/${HAB_PRIV_KEY_NAME}"
 
