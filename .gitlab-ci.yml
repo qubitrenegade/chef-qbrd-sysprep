@@ -14,7 +14,8 @@ stages:
     - cat /etc/*release* || true
     - uname -a || true
 
-extends: .before_script
+before_script:
+  extends: .before_script
 
 ### Acceptance Phase
 .acc: &acc
