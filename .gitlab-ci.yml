@@ -9,6 +9,13 @@ stages:
   - build
   - publish
 
+.before_script:
+  before_script:
+    - cat /etc/*release* || true
+    - uname -a || true
+
+extends: .before_script
+
 ### Acceptance Phase
 .acc: &acc
   stage: acceptance
@@ -16,7 +23,10 @@ stages:
     - docker
 
 .habitat-setup: &habitat-setup
+  extends: .before_script
   before_script:
+    - cat /etc/*release* || true
+    - uname -a || true
     - 'ruby -r ''net/http'' -r ''uri'' -e "puts NET::HTTP.get_response(URI.parse(${HAB_INSTALL_URL}).body" | bash'
     - mkdir -vp /hab/cache/keys
     - mv "${HAB_PRIV_KEY_PATH}" "/hab/cache/keys/${HAB_PRIV_KEY_NAME}"
