@@ -16,7 +16,9 @@ stages:
 
 .habitat-setup: &habitat-setup
   before_script:
-    - mkdir -p /hab/cache/keys
+    - curl https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh | sudo bash
+    - mkdir -vp /hab/cache/keys
+    - mv "${HAB_PRIV_KEY_PATH}" "/hab/cache/keys/${HAB_PRIV_KEY_NAME}"
 
 Unit:
   <<: *acc
@@ -68,5 +70,9 @@ Publish to Supermarket:
   stage: publish
   tags:
     - docker01
+  before_script:
+    - mkdir "${HOME}/.chef"
+    - mv -v "${KNIFE_RB_PATH}" "${HOME}/.chef/knife.rb"
+    - mv "${KNIFE_PRIVATE_KEY_PATH}" "${HOME}/.chef/${PRIVATE_KEY_NAME}"
   script:
     - knife supermarket share
