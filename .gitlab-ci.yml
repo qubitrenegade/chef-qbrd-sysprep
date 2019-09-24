@@ -1,28 +1,67 @@
 image: chef/chefworkstation:latest
 variables:
   CHEF_LICENSE: accept-no-persist
+  DEBUG_KITCHEN_CLEANUP_ON_FAILURE: /bin/true
 stages:
   - acceptance
   - test
+  - build
 
+### Acceptance Phase
 .acc: &acc
   stage: acceptance
   tags:
     - docker
-unit:
+
+.habitat-setup: &habitat-setup
+  before_script:
+    - mkdir -p /hab/cache/keys
+
+Unit:
   <<: *acc
   script:
     - delivery local unit
-lint:
+Lint:
   <<: *acc
   script:
     - delivery local lint
-syntax:
+Syntax:
   <<: *acc
   script:
     - delivery local syntax
 
-test kitchen:
+### Test Phase
+Test Kitchen:
   stage: test
   script:
-    - kitchen converge
+    - delivery local acceptance
+  after_script:
+    - ${DEBUG_KITCHEN_CLEANUP_ON_FAILURE} && delivery local cleanup
+
+### Build Phase
+Build Habitat Artifact:
+  stage: build
+  tags:
+    - docker
+  <<: *habitat-setup
+  script:
+    - hab pkg build .
+  artifacts:
+    paths:
+      - results/*
+
+### Publish Phase
+Publish to bldr.habitat.sh:
+  stage: publish
+  tags:
+    - docker
+  script:
+    - source results/last_build.env
+    - hab pkg upload "results/${pkg_artifact}"
+
+Publish to Supermarket:
+  stage: publish
+  tags:
+    - docker
+  script:
+    - knife supermarket share

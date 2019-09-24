@@ -9,4 +9,7 @@ run_lock_timeout = "30"
 [data_collector]
   enable = false
 
+[chef_license]
+  acceptance = "accept-no-persist"
+
 [attributes]

@@ -63,7 +63,7 @@ when 'centos', 'redhat', 'scientific', 'oracle'
       /bin/rm -vf /etc/udev/rules.d/70*
 
       # Step 6: Remove the traces of the template MAC address and UUIDs.
-      /bin/sed -i ‘/^(HWADDR|UUID)=/d’ /etc/sysconfig/network-scripts/ifcfg-eth0
+      /bin/sed -i '/^(HWADDR|UUID)=/d' /etc/sysconfig/network-scripts/ifcfg-eth0
 
       # Step 7: Clean /tmp out.
       /bin/rm -vrf /tmp/*
@@ -90,4 +90,12 @@ when 'ubuntu'
       echo "This is the ubuntu Version"
     EO_CLEANUP_SCRIPT
   end
+end
+
+bash 'cleanup hab dir' do
+  action :run
+  code <<~GOODBYE_CRUEL_WORLD
+    set -x
+    rm -rf /hab
+  GOODBYE_CRUEL_WORLD
 end
