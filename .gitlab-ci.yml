@@ -34,10 +34,14 @@ Syntax:
 ### Test Phase
 Test Kitchen:
   stage: test
+  tags:
+    - docker01-wks
   script:
-    - delivery local acceptance
+    # - delivery local acceptance
+    - echo 'ok we need to come back to this'
   after_script:
-    - ${DEBUG_KITCHEN_CLEANUP_ON_FAILURE} && delivery local cleanup
+    # - ${DEBUG_KITCHEN_CLEANUP_ON_FAILURE} && delivery local cleanup
+    - echo 'after script'
 
 ### Build Phase
 Build Habitat Artifact:
@@ -55,7 +59,7 @@ Build Habitat Artifact:
 Publish to bldr.habitat.sh:
   stage: publish
   tags:
-    - docker
+    - docker01
   script:
     - source results/last_build.env
     - hab pkg upload "results/${pkg_artifact}"
@@ -63,6 +67,6 @@ Publish to bldr.habitat.sh:
 Publish to Supermarket:
   stage: publish
   tags:
-    - docker
+    - docker01
   script:
     - knife supermarket share
