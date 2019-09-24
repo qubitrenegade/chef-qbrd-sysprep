@@ -1,0 +1,12 @@
+log_level = "warn"
+
+# All times are in seconds
+interval = "1800"
+splay = "300"
+splay_first_run = "10"
+run_lock_timeout = "30"
+
+[data_collector]
+  enable = false
+
+[attributes]

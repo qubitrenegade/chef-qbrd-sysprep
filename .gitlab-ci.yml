@@ -1,0 +1,28 @@
+image: chef/chefworkstation:latest
+variables:
+  CHEF_LICENSE: accept-no-persist
+stages:
+  - acceptance
+  - test
+
+.acc: &acc
+  stage: acceptance
+  tags:
+    - docker
+unit:
+  <<: *acc
+  script:
+    - delievery local unit
+lint:
+  <<: *acc
+  script:
+    - delievery local lint
+syntax:
+  <<: *acc
+  script:
+    - delievery local syntax
+
+test kitchen:
+  stage: test
+  script:
+    - kitchen converge

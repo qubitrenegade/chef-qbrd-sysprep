@@ -23,3 +23,19 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+package node['qbrd-sysprep']['packages'].select { |_k, v| v }.map { |k, _v| k } do
+  action :install
+end
+
+service 'rsyslog' do
+  action :stop
+end
+
+service 'auditd' do
+  action :stop
+end
+
+case node['platform']
+when 'redhat', 'centos'
+end  
