@@ -34,8 +34,10 @@ before_script:
     - uname -a || true
     # - 'ruby -r ''net/http'' -r ''uri'' -e "puts NET::HTTP.get_response(URI.parse(${HAB_INSTALL_URL}).body" | bash'
     - chef exec curl "${HAB_INSTALL_URL}" | bash
-    - mkdir -vp /hab/cache/keys
-    - mv "${HAB_PRIV_KEY_PATH}" "/hab/cache/keys/${HAB_PRIV_KEY_NAME}"
+    - mkdir -vp /hab/cache/keys "${HOME}/.hab/"{etc,cache/keys}
+    - cp -v "${HAB_PRIV_KEY_PATH}" "${HOME}/.hab/cache/keys/${HAB_PRIV_KEY_NAME}"
+    - cp -v "${HAB_PRIV_KEY_PATH}" "/hab/cache/keys/${HAB_PRIV_KEY_NAME}"
+    - cp -v "${HAB_CLI_TOML_PATH}" "${HOME}/.hab/etc/cli.toml"
 
 Unit:
   <<: *acc
