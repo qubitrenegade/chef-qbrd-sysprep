@@ -6,6 +6,7 @@ stages:
   - acceptance
   - test
   - build
+  - publish
 
 ### Acceptance Phase
 .acc: &acc
