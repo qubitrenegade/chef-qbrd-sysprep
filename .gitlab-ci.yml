@@ -12,15 +12,15 @@ stages:
 unit:
   <<: *acc
   script:
-    - delievery local unit
+    - delivery local unit
 lint:
   <<: *acc
   script:
-    - delievery local lint
+    - delivery local lint
 syntax:
   <<: *acc
   script:
-    - delievery local syntax
+    - delivery local syntax
 
 test kitchen:
   stage: test

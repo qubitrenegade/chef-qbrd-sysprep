@@ -37,5 +37,57 @@ service 'auditd' do
 end
 
 case node['platform']
-when 'redhat', 'centos'
-end  
+when 'centos', 'redhat', 'scientific', 'oracle'
+  bash 'cleanup script' do
+    action :run
+    code <<~EO_CLEANUP_SCRIPT
+      #!/usr/bin/env bash
+      set -x
+
+      # Step 2: Clean out yum.
+      /usr/bin/yum clean all
+
+      # Step 3: Force the logs to rotate & remove old logs we don’t need.
+      /usr/sbin/logrotate –f /etc/logrotate.conf
+      /bin/rm -vf /var/log/*-???????? /var/log/*.gz
+      /bin/rm -vf /var/log/dmesg.old
+      /bin/rm -vrf /var/log/anaconda
+
+      # Step 4: Truncate the audit logs (and other logs we want to keep placeholders for).
+      /bin/cat /dev/null > /var/log/audit/audit.log
+      /bin/cat /dev/null > /var/log/wtmp
+      /bin/cat /dev/null > /var/log/lastlog
+      /bin/cat /dev/null > /var/log/grubby
+
+      # Step 5: Remove the udev persistent device rules.
+      /bin/rm -vf /etc/udev/rules.d/70*
+
+      # Step 6: Remove the traces of the template MAC address and UUIDs.
+      /bin/sed -i ‘/^(HWADDR|UUID)=/d’ /etc/sysconfig/network-scripts/ifcfg-eth0
+
+      # Step 7: Clean /tmp out.
+      /bin/rm -vrf /tmp/*
+      /bin/rm -vrf /var/tmp/*
+
+      # Step 8: Remove the SSH host keys.
+      /bin/rm -vf /etc/ssh/*key*
+
+      # Step 9: Remove the root user’s shell history.
+      /bin/rm -f ~root/.bash_history
+      unset HISTFILE
+
+      # Step 10: Remove the root user’s SSH history & other cruft.
+      /bin/rm -rf ~root/.ssh/
+      /bin/rm -f ~root/anaconda-ks.cfg
+    EO_CLEANUP_SCRIPT
+  end
+when 'ubuntu'
+  bash 'cleanup script' do
+    action :run
+    code <<~EO_CLEANUP_SCRIPT
+      set -x
+
+      echo "This is the ubuntu Version"
+    EO_CLEANUP_SCRIPT
+  end
+end
