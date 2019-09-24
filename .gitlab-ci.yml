@@ -2,6 +2,7 @@ image: chef/chefworkstation:latest
 variables:
   CHEF_LICENSE: accept-no-persist
   DEBUG_KITCHEN_CLEANUP_ON_FAILURE: /bin/true
+  HAB_INSTALL_URL: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh"
 stages:
   - acceptance
   - test
@@ -16,7 +17,7 @@ stages:
 
 .habitat-setup: &habitat-setup
   before_script:
-    - curl https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh | sudo bash
+    - 'ruby -r ''net/http'' -r ''uri'' -e "puts NET::HTTP.get_response(URI.parse(${HAB_INSTALL_URL}).body" | bash'
     - mkdir -vp /hab/cache/keys
     - mv "${HAB_PRIV_KEY_PATH}" "/hab/cache/keys/${HAB_PRIV_KEY_NAME}"
 
@@ -62,6 +63,7 @@ Publish to bldr.habitat.sh:
   stage: publish
   tags:
     - docker01
+  <<: *habitat-setup
   script:
     - source results/last_build.env
     - hab pkg upload "results/${pkg_artifact}"
